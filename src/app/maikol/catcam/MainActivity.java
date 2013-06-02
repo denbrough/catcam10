@@ -155,9 +155,11 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-				intent.setType("image/*");
-				startActivity(intent);
+//				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//				intent.setType("image/*");
+//				startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, CustomGallery.class);
+                startActivity(intent);
 			}
 		});
 

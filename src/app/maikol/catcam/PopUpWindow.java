@@ -69,18 +69,6 @@ public class PopUpWindow {
 							+ options.get(position).getActive());
 					listViewValues.setVisibility(View.VISIBLE);
 					adapter.notifyDataSetChanged();
-					listViewValues.post(new Runnable() {
-						@Override
-						public void run() {
-							if (options.get(position) != null && listViewValues.getChildAt(
-									options.get(position).getActive())!=null) {
-								listViewValues.getChildAt(
-										options.get(position).getActive())
-										.setBackgroundColor(
-												Color.argb(50, 255, 255, 255));
-							}
-						}
-					});
 
 					ArrayAdapter arrayAdapter = new ArrayAdapter(a
 							.getApplicationContext(),
