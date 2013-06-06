@@ -1,10 +1,8 @@
 package app.maikol.catcam;
 
-import java.io.File;
-import java.io.FileOutputStream;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +13,8 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.media.AudioManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,7 +32,16 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.os.UserHandle;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
+
+import javax.xml.transform.Result;
+
 import app.maikol.catcam.util.SingleMediaScanner;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
@@ -65,7 +74,12 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	ImageButton btnSettings;
 	ImageButton btnGallery;
 
-	@Override
+    private ProgressBar mProgress;
+
+    ProgressDialog dialog;
+
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -120,7 +134,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		};
 
 		myInflater = LayoutInflater.from(this);
-		View rightBannerView = myInflater.inflate(R.layout.rightbanner, null);
+
+        mProgress = (ProgressBar)findViewById(R.id.progressBar);
+        View rightBannerView = myInflater.inflate(R.layout.rightbanner, null);
 		View soundBanner = myInflater.inflate(R.layout.soundbanner, null);
 		View soundButtonsView= myInflater.inflate(R.layout.sound_background, null);
 		View overView = myInflater.inflate(R.layout.second, null);
@@ -151,6 +167,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		btnSettings = (ImageButton) findViewById(R.id.btnSettings);
 		btnGallery = (ImageButton) findViewById(R.id.btnGallery);
 		playSound.setVisibility(View.INVISIBLE);
+
+
 		btnGallery.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -158,8 +176,18 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //				intent.setType("image/*");
 //				startActivity(intent);
+
+                ProgressBarTask pAsyn = new ProgressBarTask();
+//                pAsyn.execute();
                 Intent intent = new Intent(MainActivity.this, CustomGallery.class);
                 startActivity(intent);
+                //Set the transition -> method available from Android 2.0 and beyond
+//                overridePendingTransition(R.anim.rotate_out,R.anim.rotate_in);
+
+//                Intent intent = new Intent(MainActivity.this, CustomGallery.class);
+
+//                Intent intent = new Intent(MainActivity.this, PicSelectActivity.class);
+//                startActivity(intent);
 			}
 		});
 
@@ -230,10 +258,14 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 			out.close();
 			out = null;
 
-			SingleMediaScanner mediaScanner = new SingleMediaScanner(
-					getApplicationContext(), f);
+//			SingleMediaScanner mediaScanner = new SingleMediaScanner(
+//					getApplicationContext(), f);
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse
+                    ("file://"
+                            + Environment.getExternalStorageDirectory())));
 
-		} catch (Exception e) {
+
+        } catch (Exception e) {
 			bm.recycle();
 			e.printStackTrace();
 		}
@@ -259,9 +291,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		myCamera.startPreview();
 
 		Bundle bundle = new Bundle();
-		if (bundle != null) {
-
-		} else {
+		if (bundle == null) {
 			Toast.makeText(this, "Picture can not be saved", Toast.LENGTH_SHORT)
 					.show();
 		}
@@ -338,4 +368,27 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 			return false;
 		}
 	}
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mProgress.setVisibility(View.GONE);
+    }
+
+
+    private class ProgressBarTask extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            mProgress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
+    }
 }

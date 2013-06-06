@@ -8,13 +8,17 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import app.maikol.catcam.R;
 
 /**
  * Created by Miguel on 19/05/13.
@@ -22,7 +26,7 @@ import java.util.ArrayList;
     public class CustomHorizontalScroll extends HorizontalScrollView {
 
         Context myContext;
-        ArrayList<String> itemList = new ArrayList<String>();
+        ArrayList<File> itemList = new ArrayList<File>();
         LinearLayout internalWrapper;
 
         public CustomHorizontalScroll(Context context) {
@@ -46,30 +50,46 @@ import java.util.ArrayList;
         }
 
 
-        public void add(String path){
+
+
+        public void add(File file){
             int newIdx = itemList.size();
-            itemList.add(path);
-            internalWrapper.addView(getImageView(newIdx));
+            itemList.add(file);
+            getImageView(newIdx);
+//            internalWrapper.addView(getImageView(newIdx));
         }
 
         ImageView getImageView(int i){
             Bitmap bm = null;
             if (i < itemList.size()){
-                bm = decodeSampledBitmapFromUri(itemList.get(i), 220, 220);
+                bm = decodeSampledBitmapFromUri(itemList.get(i).getAbsolutePath(), 220, 220);
             }
 
-            final String imagePath= itemList.get(i);
-            final ImageView imageView = new ImageView(myContext);
-            imageView.setLayoutParams(new LayoutParams(220, 220));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            LayoutInflater inflater = LayoutInflater.from(this.getContext());
+            inflater.inflate(R.layout.gallery_item,internalWrapper);
+
+            final ImageView photoImageView = (ImageView) this.findViewById(R.id.imageView);
+            final TextView labelView= (TextView) this.findViewById(R.id.textView);
+            labelView.setText("PRUEBA");
+
+
+            final String imagePath= itemList.get(i).getAbsolutePath();
+
+
+//            final ImageView imageView = new ImageView(myContext);
+//            imageView.setLayoutParams(new LayoutParams(220, 220));
+            photoImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             LayoutParams layoutParams = new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(10,0,10,0);
-            imageView.setLayoutParams(layoutParams);
-            imageView.setImageBitmap(bm);
+            photoImageView.setLayoutParams(layoutParams);
+            photoImageView.setImageBitmap(bm);
+
+//            internalWrapper.addView(photoImageView);
+//            internalWrapper.addView(labelView);
 
 
 
-            imageView.setOnClickListener(new OnClickListener() {
+            photoImageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent();
@@ -83,7 +103,7 @@ import java.util.ArrayList;
                 }
             });
 
-            return imageView;
+            return photoImageView;
         }
 
         public Bitmap decodeSampledBitmapFromUri(String path, int reqWidth, int reqHeight) {
