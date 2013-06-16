@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,6 +41,8 @@ import android.os.UserHandle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Result;
 
@@ -77,6 +81,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private ProgressBar mProgress;
 
     ProgressDialog dialog;
+
+    List<Integer> optionValues;
 
 
     @Override
@@ -223,6 +229,17 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
 		
 
+        // Restore previous settings;
+
+        SharedPreferences options = getPreferences(MODE_MULTI_PROCESS);
+        int length = options.getInt("optionsLength",0);
+        if (length > 0){
+            optionValues = new ArrayList<Integer>();
+            for(int i=0;i<length;i++){
+                optionValues.add( options.getInt("options" +i ,0));
+            }
+
+        }
 	}
 
 	@Override
@@ -338,6 +355,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
 		cameraParameters = myCamera.getParameters();
 		menu = new PopUpWindow(this, cameraParameters, popUpView);
+        if (optionValues != null  && optionValues.size()>0){
+            menu.setOptionsIndex(optionValues);
+        }
 	}
 
 	@Override
@@ -373,9 +393,28 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     @Override
     protected void onResume() {
         super.onResume();
-        mProgress.setVisibility(View.GONE);
+        if (mProgress != null){
+            mProgress.setVisibility(View.GONE);
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences settings = getPreferences(MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = settings.edit();
+        int[] options = menu.getCurrentOptionsIndex();
+
+        if (options.length > 0){
+            editor.putInt("optionsLength" ,options.length);
+            for (int i =0 ; i<options.length;i++){
+                editor.putInt("options"+i, options[i]);
+            }
+
+        }
+        editor.commit();
+
+    }
 
     private class ProgressBarTask extends AsyncTask<Void,Void,Void> {
 
@@ -391,4 +430,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             return null;
         }
     }
+
+
+
 }

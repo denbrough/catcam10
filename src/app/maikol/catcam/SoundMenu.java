@@ -13,6 +13,9 @@ import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import app.maikol.catcam.adapters.SoundAdapter;
 import app.maikol.catcam.components.SoundButton;
 import app.maikol.catcam.lists.SoundListView;
@@ -27,8 +30,24 @@ public class SoundMenu {
 	private SoundButton btnSound6;
 
 	SoundListView listView;
+    LinearLayout menulayout;
 	Context c;
-	
+    public enum SOUNDS {
+        CAT_SOUND("Cat sound"),
+
+        BIP_BIP("Bip Bip");
+
+        private String name;
+
+        private SOUNDS(String name) {
+            this.name = name;
+
+        }
+
+        public String getLabel() {
+            return name;
+        }
+    }
 	public SoundMenu(Activity a) {
 		c = a.getBaseContext();
 
@@ -44,8 +63,9 @@ public class SoundMenu {
 		
 		
 		final ArrayList<String> soundsList = new ArrayList<String> ();
-		soundsList.add("Cat sound");
-		soundsList.add("Bip Bip");
+        for(SOUNDS sound: SOUNDS.values()){
+            soundsList.add(sound.getLabel());
+        }
 		
 		SoundAdapter adapter = new SoundAdapter(a.getBaseContext(),
 				soundsList);
@@ -53,34 +73,34 @@ public class SoundMenu {
 				.getApplicationContext(),
 				android.R.layout.simple_list_item_single_choice,
 				soundsList);
+        menulayout = (LinearLayout)a.findViewById(R.id.soundmenu);
+        menulayout.setVisibility(View.GONE);
 		listView = (SoundListView) a.findViewById(R.id.listViewSound);
 		listView.setAdapter(arrayAdapter);
-		listView.setVisibility(View.GONE);
-		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0,
 					View arg1, int position,
 					long arg3) {
-
-				listView.setVisibility(View.GONE);
-				if(soundsList.get(position).equals("Cat sound")){
-					listView.getSoundButton().setSoundId(R.raw.cat);
+                listView.setSelection(position);
+                menulayout.setVisibility(View.GONE);
+				if(soundsList.get(position).equals(SOUNDS.CAT_SOUND.getLabel())){
+					listView.getSoundButton().setSound(R.raw.cat, SOUNDS.CAT_SOUND.getLabel());
 				}
-				if(soundsList.get(position).equals("Bip Bip")){
-					listView.getSoundButton().setSoundId(R.raw.send);
+				if(soundsList.get(position).equals(SOUNDS.BIP_BIP.getLabel())){
+					listView.getSoundButton().setSound(R.raw.send, SOUNDS.BIP_BIP.getLabel());
 				}
 			}
 		});
 		
-		btnSound1.setLongClickListener(listView);
-		btnSound2.setLongClickListener(listView);
-		btnSound3.setLongClickListener(listView);
-		btnSound4.setLongClickListener(listView);
+		btnSound1.setLongClickListener(listView,menulayout,a);
+		btnSound2.setLongClickListener(listView,menulayout,a);
+		btnSound3.setLongClickListener(listView,menulayout,a);
+		btnSound4.setLongClickListener(listView,menulayout,a);
 	}
 	
 	public void hide(){
-		this.listView.setVisibility(View.GONE);
+		this.menulayout.setVisibility(View.GONE);
 	}
 
 }

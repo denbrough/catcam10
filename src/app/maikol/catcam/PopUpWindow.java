@@ -1,6 +1,7 @@
 package app.maikol.catcam;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import app.maikol.catcam.OptionValue.OPTION_NAME;
 import app.maikol.catcam.adapters.OptionsMenuAdapter;
+import app.maikol.catcam.adapters.OptionsValueAdapter;
 
 public class PopUpWindow {
 	private Parameters cameraParameters;
@@ -33,7 +35,9 @@ public class PopUpWindow {
 
 	ListView listView;
 	final ListView listViewValues;
-	
+
+    final ArrayList<OptionValue> options = new ArrayList<OptionValue>();
+
 	public PopUpWindow(final Activity a, Parameters p, View popUpView) {
 		activity = a;
 		cameraParameters = p;
@@ -46,7 +50,7 @@ public class PopUpWindow {
 		// flashAuto = (RadioButton) activity.findViewById(R.id.rdbFlashAuto);
 		// rdgFlash = (RadioGroup) activity.findViewById(R.id.rdgFlash);
 
-		final ArrayList<OptionValue> options = new ArrayList<OptionValue>();
+
 		options.add(new OptionValue(OPTION_NAME.FLASH, cameraParameters));
 		options.add(new OptionValue(OPTION_NAME.RESOLUTION, cameraParameters));
 
@@ -70,9 +74,8 @@ public class PopUpWindow {
 					listViewValues.setVisibility(View.VISIBLE);
 					adapter.notifyDataSetChanged();
 
-					ArrayAdapter arrayAdapter = new ArrayAdapter(a
+                    OptionsValueAdapter arrayAdapter = new OptionsValueAdapter(a
 							.getApplicationContext(),
-							android.R.layout.simple_list_item_1,
 							options.get(position).optionList);
 					listViewValues.setAdapter(arrayAdapter);
 					listViewValues.bringToFront();
@@ -114,4 +117,22 @@ public class PopUpWindow {
 	public boolean isVisible() {
 		return (this.view.getVisibility() == View.VISIBLE);
 	}
+
+    public int[] getCurrentOptionsIndex(){
+        int[] indexes;
+        indexes = new int[options.size()];
+        for (int i=0; i< options.size();i++){
+            Log.e("catcam", options.get(i).toString());
+            indexes[i] = options.get(i).getActive();
+        }
+        Log.e("catcam", indexes.toString());
+        return indexes;
+    }
+
+    public void setOptionsIndex(List<Integer> indexes){
+        Log.e("catcam", indexes.toString());
+        for (int i=0; i< indexes.size();i++){
+            options.get(i).setActive(indexes.get(i));
+        }
+    }
 }

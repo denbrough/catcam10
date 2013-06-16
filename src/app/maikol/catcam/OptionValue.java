@@ -62,7 +62,6 @@ public class OptionValue {
 				}
 				optionList.add(size.width + "x"+ size.height);
 			}
-			
 			break;
 		}
 	}
