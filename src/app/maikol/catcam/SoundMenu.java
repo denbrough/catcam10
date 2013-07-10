@@ -35,7 +35,25 @@ public class SoundMenu {
     public enum SOUNDS {
         CAT_SOUND("Cat sound"),
 
-        BIP_BIP("Bip Bip");
+        BIP_BIP("Bip Bip"),
+        
+        MEW01("Mew01"),
+        
+        MEW02("Mew02"),
+        
+        MEW03("Mew03"),
+        
+        MEW04("Mew04"),
+        
+        MEW05("Mew05"),
+        
+        MEW06("Mew06"),
+        
+        MEW07("Mew07"),
+        
+        MEW08("Mew08"),
+        
+        MEW09("Mew09"),;
 
         private String name;
 
@@ -87,6 +105,46 @@ public class SoundMenu {
 				if(soundsList.get(position).equals(SOUNDS.CAT_SOUND.getLabel())){
 					listView.getSoundButton().setSound(R.raw.cat, SOUNDS.CAT_SOUND.getLabel());
 				}
+				if(soundsList.get(position).equals(SOUNDS.BIP_BIP.getLabel())){
+					listView.getSoundButton().setSound(R.raw.send, SOUNDS.BIP_BIP.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW01.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew01, SOUNDS.MEW01.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW02.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew02, SOUNDS.MEW02.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW03.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew03, SOUNDS.MEW03.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW04.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew04, SOUNDS.MEW04.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW05.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew05, SOUNDS.MEW05.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW06.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew06, SOUNDS.MEW06.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW07.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew07, SOUNDS.MEW07.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW08.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew08, SOUNDS.MEW08.getLabel());
+				}
+				
+				if(soundsList.get(position).equals(SOUNDS.MEW09.getLabel())){
+					listView.getSoundButton().setSound(R.raw.mew09, SOUNDS.MEW09.getLabel());
+				}
+				
 				if(soundsList.get(position).equals(SOUNDS.BIP_BIP.getLabel())){
 					listView.getSoundButton().setSound(R.raw.send, SOUNDS.BIP_BIP.getLabel());
 				}

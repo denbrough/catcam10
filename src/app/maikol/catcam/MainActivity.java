@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -36,7 +37,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.os.UserHandle;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,14 +78,13 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	ImageButton btnSettings;
 	ImageButton btnGallery;
 
-    private ProgressBar mProgress;
+	private ProgressBar mProgress;
 
-    ProgressDialog dialog;
+	ProgressDialog dialog;
 
-    List<Integer> optionValues;
+	List<Integer> optionValues;
 
-
-    @Override
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -102,14 +101,14 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		mySurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 		mySurfaceView.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				menu.hide();
 				soundMenu.hide();
 			}
 		});
-		
+
 		final ShutterCallback myShutterCallback = new ShutterCallback() {
 			@Override
 			public void onShutter() {
@@ -140,15 +139,15 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		};
 
 		myInflater = LayoutInflater.from(this);
-
-        mProgress = (ProgressBar)findViewById(R.id.progressBar);
-        View rightBannerView = myInflater.inflate(R.layout.rightbanner, null);
+		mProgress = (ProgressBar) findViewById(R.id.progressBar);
+		View rightBannerView = myInflater.inflate(R.layout.rightbanner, null);
 		View soundBanner = myInflater.inflate(R.layout.soundbanner, null);
-		View soundButtonsView= myInflater.inflate(R.layout.sound_background, null);
+		View soundButtonsView = myInflater.inflate(R.layout.sound_background,
+				null);
 		View overView = myInflater.inflate(R.layout.second, null);
 		View overView2 = myInflater.inflate(R.layout.third, null);
-		popUpView = myInflater.inflate(R.layout.popup_menu, null);
 		View settingsView = myInflater.inflate(R.layout.settings, null);
+		popUpView = myInflater.inflate(R.layout.popup_menu, null);
 
 		this.addContentView(rightBannerView, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -158,14 +157,14 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		this.addContentView(soundBanner, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		this.addContentView(popUpView, new LayoutParams(
-				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		this.addContentView(settingsView, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		this.addContentView(soundButtonsView, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		
-		 soundMenu = new SoundMenu(this);
+		this.addContentView(popUpView, new LayoutParams(
+				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+
+		soundMenu = new SoundMenu(this);
 
 		playSound = (Button) findViewById(R.id.btnSound);
 		imgBtnSound = (ImageButton) findViewById(R.id.imgbtnSound);
@@ -174,26 +173,29 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		btnGallery = (ImageButton) findViewById(R.id.btnGallery);
 		playSound.setVisibility(View.INVISIBLE);
 
-
 		btnGallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-//				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//				intent.setType("image/*");
-//				startActivity(intent);
+				// Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				// intent.setType("image/*");
+				// startActivity(intent);
 
-                ProgressBarTask pAsyn = new ProgressBarTask();
-//                pAsyn.execute();
-                Intent intent = new Intent(MainActivity.this, CustomGallery.class);
-                startActivity(intent);
-                //Set the transition -> method available from Android 2.0 and beyond
-//                overridePendingTransition(R.anim.rotate_out,R.anim.rotate_in);
+				ProgressBarTask pAsyn = new ProgressBarTask();
+				// pAsyn.execute();
+				Intent intent = new Intent(MainActivity.this,
+						CustomGallery.class);
+				startActivity(intent);
+				// Set the transition -> method available from Android 2.0 and
+				// beyond
+				// overridePendingTransition(R.anim.rotate_out,R.anim.rotate_in);
 
-//                Intent intent = new Intent(MainActivity.this, CustomGallery.class);
+				// Intent intent = new Intent(MainActivity.this,
+				// CustomGallery.class);
 
-//                Intent intent = new Intent(MainActivity.this, PicSelectActivity.class);
-//                startActivity(intent);
+				// Intent intent = new Intent(MainActivity.this,
+				// PicSelectActivity.class);
+				// startActivity(intent);
 			}
 		});
 
@@ -227,19 +229,17 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 			}
 		});
 
-		
+		// Restore previous settings;
 
-        // Restore previous settings;
+		SharedPreferences options = getPreferences(MODE_MULTI_PROCESS);
+		int length = options.getInt("optionsLength", 0);
+		if (length > 0) {
+			optionValues = new ArrayList<Integer>();
+			for (int i = 0; i < length; i++) {
+				optionValues.add(options.getInt("options" + i, 0));
+			}
 
-        SharedPreferences options = getPreferences(MODE_MULTI_PROCESS);
-        int length = options.getInt("optionsLength",0);
-        if (length > 0){
-            optionValues = new ArrayList<Integer>();
-            for(int i=0;i<length;i++){
-                optionValues.add( options.getInt("options" +i ,0));
-            }
-
-        }
+		}
 	}
 
 	@Override
@@ -275,14 +275,13 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 			out.close();
 			out = null;
 
-//			SingleMediaScanner mediaScanner = new SingleMediaScanner(
-//					getApplicationContext(), f);
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse
-                    ("file://"
-                            + Environment.getExternalStorageDirectory())));
+			// SingleMediaScanner mediaScanner = new SingleMediaScanner(
+			// getApplicationContext(), f);
+			sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+					Uri.parse("file://"
+							+ Environment.getExternalStorageDirectory())));
 
-
-        } catch (Exception e) {
+		} catch (Exception e) {
 			bm.recycle();
 			e.printStackTrace();
 		}
@@ -328,8 +327,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 			// p.setPreviewSize(width, height);
 			p = menu.getParameters();
 			setPreviewResolution(p);
-//			p.setPreviewSize(p.getSupportedPreviewSizes().get(0).width, p
-//					.getSupportedPreviewSizes().get(0).height);
+			// p.setPreviewSize(p.getSupportedPreviewSizes().get(0).width, p
+			// .getSupportedPreviewSizes().get(0).height);
 			myCamera.setParameters(p);
 			myCamera.setPreviewDisplay(holder);
 			myCamera.startPreview();
@@ -344,8 +343,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	}
 
 	private void setPreviewResolution(Parameters p) {
-		int maxWidth=0;
-		int maxHeight=0;
+		int maxWidth = 0;
+		int maxHeight = 0;
 		p.setPreviewSize(p.getPictureSize().width, p.getPictureSize().height);
 	}
 
@@ -355,9 +354,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
 		cameraParameters = myCamera.getParameters();
 		menu = new PopUpWindow(this, cameraParameters, popUpView);
-        if (optionValues != null  && optionValues.size()>0){
-            menu.setOptionsIndex(optionValues);
-        }
+		if (optionValues != null && optionValues.size() > 0) {
+			menu.setOptionsIndex(optionValues);
+		}
 	}
 
 	@Override
@@ -389,48 +388,46 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mProgress != null) {
+			mProgress.setVisibility(View.GONE);
+		}
+	}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mProgress != null){
-            mProgress.setVisibility(View.GONE);
-        }
-    }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		SharedPreferences settings = getPreferences(MODE_MULTI_PROCESS);
+		SharedPreferences.Editor editor = settings.edit();
+		if (menu != null) {
+			int[] options = menu.getCurrentOptionsIndex();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences settings = getPreferences(MODE_MULTI_PROCESS);
-        SharedPreferences.Editor editor = settings.edit();
-        int[] options = menu.getCurrentOptionsIndex();
+			if (options.length > 0) {
+				editor.putInt("optionsLength", options.length);
+				for (int i = 0; i < options.length; i++) {
+					editor.putInt("options" + i, options[i]);
+				}
 
-        if (options.length > 0){
-            editor.putInt("optionsLength" ,options.length);
-            for (int i =0 ; i<options.length;i++){
-                editor.putInt("options"+i, options[i]);
-            }
+			}
+			editor.commit();
+		}
+	}
 
-        }
-        editor.commit();
+	private class ProgressBarTask extends AsyncTask<Void, Void, Void> {
 
-    }
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
 
-    private class ProgressBarTask extends AsyncTask<Void,Void,Void> {
+			mProgress.setVisibility(View.VISIBLE);
+		}
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            mProgress.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-    }
-
-
+		@Override
+		protected Void doInBackground(Void... voids) {
+			return null;
+		}
+	}
 
 }

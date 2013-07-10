@@ -53,6 +53,7 @@ public class PopUpWindow {
 
 		options.add(new OptionValue(OPTION_NAME.FLASH, cameraParameters));
 		options.add(new OptionValue(OPTION_NAME.RESOLUTION, cameraParameters));
+		options.add(new OptionValue(OPTION_NAME.FOCUS, cameraParameters));
 
 		final OptionsMenuAdapter adapter = new OptionsMenuAdapter(a.getBaseContext(),
 				options);

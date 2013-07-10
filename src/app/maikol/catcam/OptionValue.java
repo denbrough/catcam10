@@ -20,7 +20,7 @@ public class OptionValue {
 	private int active = -1;
 
 	public enum OPTION_NAME {
-		FLASH, RESOLUTION
+		FLASH, RESOLUTION, FOCUS
 	};
 
 	public OptionValue() {
@@ -39,16 +39,16 @@ public class OptionValue {
 			optionList.add("Auto");
 			this.name = "Flash";
 			active = 0;
-			try{
-			if (parameters.getFlashMode().equalsIgnoreCase(
-					Parameters.FLASH_MODE_OFF)) {
-				active = 1;
-			}
-			if (parameters.getFlashMode().equalsIgnoreCase(
-					Parameters.FLASH_MODE_AUTO)) {
-				active = 2;
-			}
-			}catch (Exception e){
+			try {
+				if (parameters.getFlashMode().equalsIgnoreCase(
+						Parameters.FLASH_MODE_OFF)) {
+					active = 1;
+				}
+				if (parameters.getFlashMode().equalsIgnoreCase(
+						Parameters.FLASH_MODE_AUTO)) {
+					active = 2;
+				}
+			} catch (Exception e) {
 				optionList.clear();
 				optionList.add("Off");
 			}
@@ -56,11 +56,27 @@ public class OptionValue {
 			break;
 		case RESOLUTION:
 			this.name = "Resolution";
-			for (Size size : cameraParameters.getSupportedPictureSizes()){
-				if (size.equals(cameraParameters.getPictureSize())){
-					active = cameraParameters.getSupportedPictureSizes().indexOf(size);
+			for (Size size : cameraParameters.getSupportedPictureSizes()) {
+				if (size.equals(cameraParameters.getPictureSize())) {
+					active = cameraParameters.getSupportedPictureSizes()
+							.indexOf(size);
 				}
-				optionList.add(size.width + "x"+ size.height);
+				optionList.add(size.width + "x" + size.height);
+			}
+			break;
+
+		case FOCUS:
+			this.name = "Focus";
+			for (String focusMode : cameraParameters.getSupportedFocusModes()) {
+				if (focusMode.equals(cameraParameters.getFocusMode())) {
+					active = cameraParameters.getSupportedFocusModes().indexOf(
+							focusMode);
+				}
+				if (focusMode.length() > 1) {
+					focusMode = focusMode.substring(0, 1).toUpperCase()
+							+ focusMode.substring(1);
+				}
+				optionList.add(focusMode);
 			}
 			break;
 		}
@@ -89,15 +105,18 @@ public class OptionValue {
 		case RESOLUTION:
 			int height;
 			int width;
-			if (isActive()){
-				
+			if (isActive()) {
+
 				s = optionList.get(active);
-				String [] temp = s.split("x");
+				String[] temp = s.split("x");
 				width = Integer.parseInt(temp[0]);
 				height = Integer.parseInt(temp[1]);
-				
+
 				cameraParameters.setPictureSize(width, height);
-				if (cameraParameters.getSupportedPreviewSizes().contains(cameraParameters.getSupportedPictureSizes().get(active))){
+				if (cameraParameters.getSupportedPreviewSizes()
+						.contains(
+								cameraParameters.getSupportedPictureSizes()
+										.get(active))) {
 					cameraParameters.setPreviewSize(width, height);
 				}
 			}

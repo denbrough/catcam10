@@ -39,6 +39,7 @@
         android:layout_marginTop="2dp"
         android:layout_toLeftOf="@+id/LinearLayout1"
         android:animateLayoutChanges="false"
+        android:background="#88000000"
         android:choiceMode="none"
         android:clipChildren="false"
         android:drawSelectorOnTop="true"
